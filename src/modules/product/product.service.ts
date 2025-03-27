@@ -1,6 +1,5 @@
-import { ProductType } from "../../shared/interfaces/schema.interface";
+import { ProductType, Product } from "../../shared/interfaces/schema.interface";
 import { slugify } from "../../shared/utils/slugify";
-import { Product } from "../../shared/interfaces/schema.interface";
 import { CreateProductDto } from "./product.interface";
 import { v4 as uuidv4 } from "uuid";
 

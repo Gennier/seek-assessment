@@ -1,7 +1,6 @@
-import { ProductType, Promotion } from "../../shared/interfaces/schema.interface";
+import { Promotion } from "../../shared/interfaces/schema.interface";
 import { slugify } from "../../shared/utils/slugify";
-import { Product } from "../../shared/interfaces/schema.interface";
-import { CreateProductDto } from "./product.interface";
+import { CreatePromotionDto } from "./promotion.interface";
 import { v4 as uuidv4 } from "uuid";
 
 export class PromotionService {
@@ -40,12 +39,19 @@ export class PromotionService {
     return this.promotionsData;
   }
 
-  createPromotion(data: CreateProductDto) {
+  createPromotion(data: CreatePromotionDto) {
+    // do pricing rules here
+
+
     this.promotionsData.push({
       id: uuidv4(),
       ...data,
-      slug: slugify(data.name),
-      type: ProductType.ADS,
+      code: slugify(data.code),
+      usageCount: 0,
     });
+  }
+
+  getPromotionByCode(code: string) {
+    return this.promotionsData.find((promotion) => promotion.code === slugify(code));
   }
 }

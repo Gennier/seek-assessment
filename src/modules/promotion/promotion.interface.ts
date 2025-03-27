@@ -1,5 +1,5 @@
 export interface CreatePromotionDto {
-  name: string;
+  code: string;
   description: string;
-  price: number;
+  usageLimit?: number;
 }
