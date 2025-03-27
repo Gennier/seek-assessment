@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [uuid_ossp(map: "uuid-ossp")]
 }
 
 enum ProductType {
@@ -23,7 +25,7 @@ enum PricingRuleType {
 }
 
 model Product {
-  id          String      @id @default(cuid())
+  id        String @id @default(dbgenerated("uuid_generate_v4()")) @db.VarChar(255)
   slug        String      @unique @db.VarChar(255)  
   name        String      @db.VarChar(255)
   type        ProductType
@@ -40,7 +42,7 @@ model Product {
 }
 
 model Order {
-  id               String      @id @default(cuid())
+  id        String @id @default(dbgenerated("uuid_generate_v4()")) @db.VarChar(255)
   initialAmount    Decimal     @db.Decimal(10, 2) @map("initial_amount")
   discountedAmount Decimal     @db.Decimal(10, 2) @map("discounted_amount")
   finalAmount      Decimal     @db.Decimal(10, 2) @map("final_amount")
@@ -48,14 +50,14 @@ model Order {
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
   deletedAt        DateTime?   @map("deleted_at")
-  
+
   products         Product[]
 
   @@map(name: "orders")
 }
 
 model Promotion {
-  id          String @id @default(cuid())
+  id        String @id @default(dbgenerated("uuid_generate_v4()")) @db.VarChar(255)
   code        String @unique @db.VarChar(15)
   description String @db.Text()
   usageLimit  Int?   @map("usage_limit")
@@ -71,7 +73,7 @@ model Promotion {
 }
 
 model PricingRule {
-  id          String          @id @default(cuid())
+  id        String @id @default(dbgenerated("uuid_generate_v4()")) @db.VarChar(255)
   productId   String          @map("product_id")
   product     Product         @relation(fields: [productId], references: [id])
   promotionId String          @map("promotion_id")

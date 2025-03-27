@@ -1,3 +1,6 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- CreateEnum
 CREATE TYPE "ProductType" AS ENUM ('ads');
 
@@ -9,7 +12,7 @@ CREATE TYPE "PricingRuleType" AS ENUM ('deals', 'fixed_price_discount');
 
 -- CreateTable
 CREATE TABLE "products" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(255) NOT NULL DEFAULT uuid_generate_v4(),
     "slug" VARCHAR(255) NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "type" "ProductType" NOT NULL,
@@ -24,7 +27,7 @@ CREATE TABLE "products" (
 
 -- CreateTable
 CREATE TABLE "orders" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(255) NOT NULL DEFAULT uuid_generate_v4(),
     "initial_amount" DECIMAL(10,2) NOT NULL,
     "discounted_amount" DECIMAL(10,2) NOT NULL,
     "final_amount" DECIMAL(10,2) NOT NULL,
@@ -38,7 +41,7 @@ CREATE TABLE "orders" (
 
 -- CreateTable
 CREATE TABLE "promotions" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(255) NOT NULL DEFAULT uuid_generate_v4(),
     "code" VARCHAR(15) NOT NULL,
     "description" TEXT NOT NULL,
     "usage_limit" INTEGER,
@@ -52,7 +55,7 @@ CREATE TABLE "promotions" (
 
 -- CreateTable
 CREATE TABLE "pricing_rules" (
-    "id" TEXT NOT NULL,
+    "id" VARCHAR(255) NOT NULL DEFAULT uuid_generate_v4(),
     "product_id" TEXT NOT NULL,
     "promotion_id" TEXT NOT NULL,
     "type" "PricingRuleType" NOT NULL,
@@ -66,8 +69,8 @@ CREATE TABLE "pricing_rules" (
 
 -- CreateTable
 CREATE TABLE "_OrderToProduct" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
+    "A" VARCHAR(255) NOT NULL,
+    "B" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "_OrderToProduct_AB_pkey" PRIMARY KEY ("A","B")
 );

@@ -1,5 +1,5 @@
 import { PricingRuleType, PrismaClient, ProductType } from '@prisma/client';
-import { slugify } from '../src/shared/utils/slugify';
+import { slugify } from '../src/commons/utils/slugify';
 import { Decimal } from '@prisma/client/runtime/library';
 import { v4 as uuidv4 } from 'uuid';
 

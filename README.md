@@ -1,69 +1,44 @@
-# Chat Statistics Processor
+## Description
 
-This application processes daily chat statistics from multiple websites, allowing you to filter data by date ranges and calculate total chats and missed chats per website.
+Ivan - Stashaway Tech Assessment.
 
-## Features
-
-- Fetch daily chat statistics from a remote API
-- Filter chat data by date range
-- Calculate total chats and missed chats per website
-- Error handling for invalid date ranges
-
-## Prerequisites
-
-- Node.js installed on your system
-- TypeScript installed (`npm install -g typescript`)
-
-## Installation
-
-1. Clone this repository
-2. Install dependencies:
+## Project setup
 
 ```bash
-// Run this command to install dependencies
-
-pnpm install
+$ npm install
+$ npm run prisma:generate
 ```
 
-## Running the Application
+### Run migration and seed
 
-1. Run the TypeScript file:
+Add PostgreSQL connection string in env as DATABASE_URL.  
+Refer to .env.example
 
 ```bash
-pnpm start
+## Run migration
+$ npm run prisma:deploy
+
+## Run seed
+$ npm run seed
 ```
 
-## Testing Different Date Ranges
 
-To test the application with different date ranges:
+## Compile and run the project
 
-1. Open `index.ts`
-2. Locate the following code block at the bottom of the file:
+```bash
+## Start API
 
-```typescript
-const result = await processChatStatistics({
-  dailyChatsData,
-  startDate: new Date('2019-04-01'),
-  endDate: new Date('2019-04-30'),
-});
+$ npm run start:dev
+
+## Run tests
+
+```bash
+
+$ pnpm run test
+
 ```
 
-3. Modify the `startDate` and `endDate` parameters to your desired date range
-4. Save the file
-5. Recompile and run the application using the commands mentioned above
+## Resources
 
-### Date Format
+Read my techplan for API details [here](https://ordinary-sumac-3cf.notion.site/Stashaway-Tech-Assessment-1a50a30fbd2e80149c7fe6a2441abb61?pvs=4)
 
-Dates should be provided in the "YYYY-MM-DD" format. For example:
-
-- `new Date("2019-04-01")` for April 1st, 2019
-- `new Date("2019-04-30")` for April 30th, 2019
-
-### Notes
-
-- If you don't want to filter by date, you can remove both `startDate` and `endDate` parameters
-- The `startDate` must be less than or equal to the `endDate`
-- You cannot specify an `endDate` without a `startDate`
-- `process-chat-statistics.ts` is where all the logic is implemented
-- `index.ts` is where the application is run
-- `tests/index.test.ts` is where the tests are implemented
