@@ -43,8 +43,8 @@ To test the application with different date ranges:
 ```typescript
 const result = await processChatStatistics({
   dailyChatsData,
-  startDate: new Date("2019-04-01"),
-  endDate: new Date("2019-04-30"),
+  startDate: new Date('2019-04-01'),
+  endDate: new Date('2019-04-30'),
 });
 ```
 

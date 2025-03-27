@@ -1,5 +1,5 @@
-import { ChatStatisticsProcessor } from "./modules/chat/chat.service";
-import { TawkChatDataProvider } from "./modules/data-providers/chat";
+import { ChatStatisticsProcessor } from './modules/chat/chat.service';
+import { TawkChatDataProvider } from './modules/data-providers/chat';
 
 (async () => {
   // Get data
@@ -16,8 +16,8 @@ import { TawkChatDataProvider } from "./modules/data-providers/chat";
     }
   */
   const result = await chatStatisticsProcessor.processChatStatistics({
-    startDate: new Date("2019-04-01"),
-    endDate: new Date("2019-04-30"),
+    startDate: new Date('2019-04-01'),
+    endDate: new Date('2019-04-30'),
   });
   console.log(result);
 })();

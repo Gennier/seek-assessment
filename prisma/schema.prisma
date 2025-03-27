@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ProductType {
+  ADS @map("ads")
+}
+
+enum OrderStatus {
+  PENDING @map("pending")
+  COMPLETED @map("completed")
+  CANCELLED @map("cancelled")
+}
+
+enum PricingRuleType {
+  DEALS @map("deals")
+  FIXED_PRICE_DISCOUNT @map("fixed_price_discount")
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  slug        String      @unique @db.VarChar(255)  
+  name        String      @db.VarChar(255)
+  type        ProductType
+  description String      @db.Text()
+  price       Decimal     @db.Decimal(10, 2)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  deletedAt   DateTime?   @map("deleted_at")
+
+  orders       Order[]
+  pricingRules PricingRule[]
+
+  @@map(name: "products")
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  initialAmount    Decimal     @db.Decimal(10, 2) @map("initial_amount")
+  discountedAmount Decimal     @db.Decimal(10, 2) @map("discounted_amount")
+  finalAmount      Decimal     @db.Decimal(10, 2) @map("final_amount")
+  status           OrderStatus @map("status")
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+  deletedAt        DateTime?   @map("deleted_at")
+  
+  products         Product[]
+
+  @@map(name: "orders")
+}
+
+model Promotion {
+  id          String @id @default(cuid())
+  code        String @unique @db.VarChar(15)
+  description String @db.Text()
+  usageLimit  Int?   @map("usage_limit")
+  usageCount  Int    @default(0) @map("usage_count")
+
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  deletedAt   DateTime?   @map("deleted_at")
+
+  pricingRules PricingRule[]
+
+  @@map(name: "promotions")
+}
+
+model PricingRule {
+  id          String          @id @default(cuid())
+  productId   String          @map("product_id")
+  product     Product         @relation(fields: [productId], references: [id])
+  promotionId String          @map("promotion_id")
+  promotion   Promotion       @relation(fields: [promotionId], references: [id])
+  type        PricingRuleType 
+  rule        Json            @db.Json() 
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  deletedAt   DateTime?       @map("deleted_at")
+
+  @@unique([productId, promotionId])
+  @@map(name: "pricing_rules")
+}
+

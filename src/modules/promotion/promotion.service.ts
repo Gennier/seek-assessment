@@ -1,57 +1,41 @@
-import { Promotion } from "../../shared/interfaces/schema.interface";
-import { slugify } from "../../shared/utils/slugify";
-import { CreatePromotionDto } from "./promotion.interface";
-import { v4 as uuidv4 } from "uuid";
+import { PrismaClient } from '@prisma/client';
+import { slugify } from '../../shared/utils/slugify';
+import { CreatePromotionDto } from './promotion.interface';
 
 export class PromotionService {
-  constructor() {}
-
-  private readonly promotionsData: Promotion[] = [
-    {
-      id: uuidv4(),
-      name: "Classic Ad",
-      slug: slugify("Classic Ad"),
-      description: "Offers the most basic level of advertisement",
-      price: 269.99,
-      type: ProductType.ADS,
-    },
-    {
-      id: uuidv4(),
-      name: "Stand out Ad",
-      slug: slugify("Stand out Ad"),
-      description:
-        "Allows advertisers to use a company logo and use a longer presentation text",
-      price: 322.99,
-      type: ProductType.ADS,
-    },
-    {
-      id: uuidv4(),
-      name: "Premium Ad",
-      slug: slugify("Premium Ad"),
-      description:
-        "Same benefits as Standout Ad, but also puts the advertisement at the top of the results, allowing higher visibility",
-      price: 394.99,
-      type: ProductType.ADS,
-    },
-  ];
-
-  getPromotions() {
-    return this.promotionsData;
+  constructor(private readonly prisma: PrismaClient) {
+    this.prisma = prisma;
   }
 
-  createPromotion(data: CreatePromotionDto) {
-    // do pricing rules here
+  async getPromotions() {
+    return await this.prisma.promotion.findMany();
+  }
 
+  async createPromotion(data: CreatePromotionDto) {
+    const pricingRules = data.pricingRules?.map((pricingRule) => {
+      return {
+        ...pricingRule,
+        rule: JSON.stringify(pricingRule.rule),
+      };
+    });
 
-    this.promotionsData.push({
-      id: uuidv4(),
-      ...data,
-      code: slugify(data.code),
-      usageCount: 0,
+    await this.prisma.promotion.create({
+      data: {
+        ...data,
+        code: slugify(data.code),
+        usageCount: 0,
+        pricingRules: {
+          create: pricingRules,
+        },
+      },
     });
   }
 
-  getPromotionByCode(code: string) {
-    return this.promotionsData.find((promotion) => promotion.code === slugify(code));
+  async getPromotionByCode(code: string) {
+    return await this.prisma.promotion.findUnique({
+      where: {
+        code: slugify(code),
+      },
+    });
   }
 }
