@@ -12,7 +12,7 @@ export class PromotionService {
     return await this.prisma.promotion.findMany();
   }
 
-  async createPromotion(data: CreatePromotionDto): Promise<void> {
+  async create(data: CreatePromotionDto): Promise<void> {
     const pricingRules = data.pricingRules?.map((pricingRule) => {
       return {
         ...pricingRule,

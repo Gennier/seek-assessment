@@ -8,6 +8,6 @@ export class CheckoutController {
 
   @Post('')
   async getList(@Body() data: CreateCheckoutDto) {
-      return await this.service.checkout(data);
+    return await this.service.checkout(data);
   }
 }
