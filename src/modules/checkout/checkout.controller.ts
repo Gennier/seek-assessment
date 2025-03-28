@@ -7,7 +7,7 @@ export class CheckoutController {
   constructor(private readonly service: CheckoutService) {}
 
   @Post('')
-  async getList(@Body() data: CreateCheckoutDto) {
+  async checkout(@Body() data: CreateCheckoutDto) {
     return await this.service.checkout(data);
   }
 }
