@@ -13,7 +13,7 @@ export class ProductService {
     return await this.prisma.product.findMany();
   }
 
-  async createProduct(data: CreateProductDto) {
+  async create(data: CreateProductDto) {
     return await this.prisma.product.create({
       data: {
         ...data,

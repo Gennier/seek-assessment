@@ -42,6 +42,7 @@ export class CheckoutService {
       checkout.addProduct(product, quantity);
     }
 
+    // will calculate final amount and discount
     checkout.calculate();
 
     return await this.orderService.create(

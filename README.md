@@ -1,6 +1,6 @@
 ## Description
 
-Ivan - Stashaway Tech Assessment.
+Ivan - Seek Tech Assessment.
 
 ## Project setup
 
@@ -10,6 +10,8 @@ $ npm run prisma:generate
 ```
 
 ### Run migration and seed
+
+PLEASE RUN SEED FIRST TO GET INITAL DATA
 
 Add PostgreSQL connection string in env as DATABASE_URL.  
 Refer to .env.example
@@ -34,11 +36,6 @@ $ npm run start:dev
 
 ```bash
 
-$ pnpm run test
+$ npm run test
 
 ```
-
-## Resources
-
-Read my techplan for API details [here](https://ordinary-sumac-3cf.notion.site/Stashaway-Tech-Assessment-1a50a30fbd2e80149c7fe6a2441abb61?pvs=4)
-
