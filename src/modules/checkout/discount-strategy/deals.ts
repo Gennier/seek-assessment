@@ -8,7 +8,7 @@ export class DealDiscountStrategy implements DiscountStrategy {
 
   calculateDiscount(product: Product, quantity: number): Decimal {
     if (quantity >= this.rule.buyQuantity) {
-      const initialPrice = product.price.mul(quantity);
+      const initialPrice = product.price.mul(this.rule.buyQuantity);
       const payPrice = product.price.mul(this.rule.payQuantity);
       return initialPrice.sub(payPrice);
     }

@@ -1,6 +1,5 @@
 import { CreateCheckoutDto } from './checkout.interface';
 import { Checkout } from './checkout';
-import { slugify } from '../../commons/utils/slugify';
 import { PricingRule, Promotion } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { NotFoundException, Injectable } from '@nestjs/common';
@@ -45,7 +44,7 @@ export class CheckoutService {
 
     checkout.calculate();
 
-    await this.orderService.create(
+    return await this.orderService.create(
       {
         products: checkout.getProducts(),
         initialAmount: checkout.getInitialAmount(),

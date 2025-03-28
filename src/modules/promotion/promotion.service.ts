@@ -1,6 +1,6 @@
 import { slugify } from '../../commons/utils/slugify';
 import { CreatePromotionDto } from './promotion.interface';
-import { PrismaService } from '@src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Promotion, PricingRule } from '@prisma/client';
 
@@ -32,7 +32,7 @@ export class PromotionService {
     });
   }
 
-  async getPromotionByCode(code: string): Promise<(Promotion & { pricingRules: PricingRule[] })> {
+  async getPromotionByCode(code: string): Promise<Promotion & { pricingRules: PricingRule[] }> {
     const promotion = await this.prisma.promotion.findUnique({
       where: {
         code: slugify(code),
@@ -42,11 +42,11 @@ export class PromotionService {
       },
     });
 
-    if (!promotion) { 
-      throw new NotAcceptableException('Promotion Code is invalid')
+    if (!promotion) {
+      throw new NotAcceptableException('Promotion Code is invalid');
     }
 
-    return promotion
+    return promotion;
   }
 
   async applyPromotion(promotionCode: string): Promise<void> {

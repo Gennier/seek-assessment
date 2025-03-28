@@ -5,9 +5,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TYPE "ProductType" AS ENUM ('ads');
 
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('pending', 'completed', 'cancelled');
-
--- CreateEnum
 CREATE TYPE "PricingRuleType" AS ENUM ('deals', 'fixed_price_discount');
 
 -- CreateTable
@@ -31,7 +28,6 @@ CREATE TABLE "orders" (
     "initial_amount" DECIMAL(10,2) NOT NULL,
     "discounted_amount" DECIMAL(10,2) NOT NULL,
     "final_amount" DECIMAL(10,2) NOT NULL,
-    "status" "OrderStatus" NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "deleted_at" TIMESTAMP(3),

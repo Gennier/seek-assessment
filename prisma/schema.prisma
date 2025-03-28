@@ -13,12 +13,6 @@ enum ProductType {
   ADS @map("ads")
 }
 
-enum OrderStatus {
-  PENDING @map("pending")
-  COMPLETED @map("completed")
-  CANCELLED @map("cancelled")
-}
-
 enum PricingRuleType {
   DEALS @map("deals")
   FIXED_PRICE_DISCOUNT @map("fixed_price_discount")
@@ -46,7 +40,6 @@ model Order {
   initialAmount    Decimal     @db.Decimal(10, 2) @map("initial_amount")
   discountedAmount Decimal     @db.Decimal(10, 2) @map("discounted_amount")
   finalAmount      Decimal     @db.Decimal(10, 2) @map("final_amount")
-  status           OrderStatus @map("status")
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
   deletedAt        DateTime?   @map("deleted_at")
@@ -71,7 +64,6 @@ model Promotion {
 
   @@map(name: "promotions")
 }
-
 model PricingRule {
   id        String @id @default(dbgenerated("uuid_generate_v4()")) @db.VarChar(255)
   productId   String          @map("product_id")

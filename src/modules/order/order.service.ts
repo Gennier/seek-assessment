@@ -1,7 +1,6 @@
 import { CreateOrderDto } from './order.interface';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { OrderStatus } from '@prisma/client';
 import { PromotionService } from '../promotion/promotion.service';
 
 @Injectable()
@@ -16,7 +15,6 @@ export class OrderService {
     const order = await this.prisma.order.create({
       data: {
         ...rest,
-        status: OrderStatus.PENDING,
         products: {
           connect: products.map((product) => ({ id: product.id })),
         },

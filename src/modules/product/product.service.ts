@@ -2,7 +2,7 @@ import { ProductType } from '@prisma/client';
 import { slugify } from '../../commons/utils/slugify';
 import { CreateProductDto } from './product.interface';
 import { Decimal } from '@prisma/client/runtime/library';
-import { PrismaService } from '@src/prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
