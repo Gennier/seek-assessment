@@ -1,107 +1,88 @@
 import { PricingRule, PricingRuleType, Product, Promotion } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import { IDealPricingRule, IFixedPricePricingRule } from '../promotion/promotion.interface';
+import { DealDiscountStrategy } from './discount-strategy/deals';
+import { FixedPriceDiscountStrategy } from './discount-strategy/fixed-price';
+import { DiscountStrategy } from './discount-strategy/discount-strategy.interface';
+import { BadRequestException } from '@nestjs/common';
 
 export class Checkout {
-    products: Product[];
-    finalAmount: Decimal;
-    discountAmount: Decimal;
-    initialAmount: Decimal;
-    pricingRules: PricingRule[];
+  private readonly products: Product[] = [];
+  private finalAmount: Decimal = new Decimal(0);
+  private discountAmount: Decimal = new Decimal(0);
+  private initialAmount: Decimal = new Decimal(0);
 
-    constructor(data: { pricingRules: PricingRule[] }) {
-        this.pricingRules = data.pricingRules;
-        this.products = [];
-        this.finalAmount = new Decimal(0);
-        this.discountAmount = new Decimal(0);
-        this.initialAmount = new Decimal(0);
+  constructor(private readonly pricingRules: PricingRule[]) {}
+
+  addProduct(product: Product, quantity: number): void {
+    this.products.push(...Array(quantity).fill(product));
+  }
+
+  getProducts(): Product[] {
+    return this.products;
+  }
+
+  calculate(): void {
+    this.finalAmount = this.products.reduce((acc, product) => acc.add(product.price), new Decimal(0));
+    this.discountAmount = new Decimal(0);
+    this.initialAmount = this.finalAmount;
+
+    for (const pricingRule of this.pricingRules) {
+      // Find for products that applies to the promo
+      const product = this.products.find((p) => p.id === pricingRule.productId);
+
+      if (!product) {
+        continue;
+      }
+
+      const quantity = this.getProductQuantity(product.id);
+      const discountStrategy = this.createDiscountStrategy(pricingRule);
+      const discount = discountStrategy.calculateDiscount(product, quantity);
+
+      if (discount.gt(0)) {
+        this.applyDiscount(discount);
+      } else {
+        // If discount is 0 meaning deals does not meet, then doesnt qualify for all rules in promo
+        this.revertDiscount();
+        return;
+      }
     }
+  }
 
-    addProduct(product: Product, quantity: number) {
-        // Push the product to the array 'quantity' times
-        for (let i = 1; i <= quantity; i++) {
-            this.products.push(product);
-        }
+  private createDiscountStrategy(pricingRule: PricingRule): DiscountStrategy {
+    switch (pricingRule.type) {
+      case PricingRuleType.DEALS:
+        return new DealDiscountStrategy(pricingRule.rule as unknown as IDealPricingRule);
+      case PricingRuleType.FIXED_PRICE_DISCOUNT:
+        return new FixedPriceDiscountStrategy(pricingRule.rule as unknown as IFixedPricePricingRule);
+      default:
+        throw new BadRequestException('Invalid pricing rule type');
     }
+  }
 
-    getProducts() {
-        return this.products;
-    }
+  private applyDiscount(discount: Decimal): void {
+    this.discountAmount = this.discountAmount.add(discount);
+    this.finalAmount = this.finalAmount.sub(discount);
+  }
 
-    calculate() {
-        this.finalAmount = this.products.reduce((acc, product) => acc.add(product.price), new Decimal(0));
-        this.discountAmount = new Decimal(0);
-        this.initialAmount = this.finalAmount;
+  private revertDiscount(): void {
+    this.discountAmount = new Decimal(0);
+    this.finalAmount = this.initialAmount;
+  }
 
-        for (const pricingRule of this.pricingRules) {
-            const product = this.products.find((p) => p.id === pricingRule.productId);
+  private getProductQuantity(productId: string): number {
+    return this.products.filter((p) => p.id === productId).length;
+  }
 
-            /* 
-      With this added means promo code doesnt have to exect match the product.
-      If there are some products that are not in the promo code, it will still 
-      give discount to other product that is found
-      */
+  getFinalAmount(): Decimal {
+    return this.finalAmount;
+  }
 
-            if (!product) {
-                continue;
-            }
+  getInitialAmount(): Decimal {
+    return this.initialAmount;
+  }
 
-            switch (pricingRule.type) {
-                case PricingRuleType.DEALS: {
-                    const discountAmount = this.calculateDealDiscount(
-                        product,
-                        pricingRule.rule as unknown as IDealPricingRule,
-                    );
-                    this.discountAmount = this.discountAmount.add(discountAmount);
-                    this.finalAmount = this.finalAmount.sub(discountAmount);
-                    break;
-                }
-                case PricingRuleType.FIXED_PRICE_DISCOUNT: {
-                    const discountAmount = this.calculateFixedPriceDiscount(
-                        product,
-                        pricingRule.rule as unknown as IFixedPricePricingRule,
-                    );
-                    this.discountAmount = this.discountAmount.add(discountAmount);
-                    this.finalAmount = this.finalAmount.sub(discountAmount);
-                    break;
-                }
-            }
-        }
-    }
-
-    calculateDealDiscount(product: Product, dealRule: IDealPricingRule) {
-        const buyingQuantity = this.products.filter((p) => p.id === product.id).length;
-
-        if (buyingQuantity >= dealRule.buyQuantity) {
-            const initialPrice = product.price.mul(buyingQuantity);
-            const payPrice = product.price.mul(dealRule.payQuantity);
-            return initialPrice.sub(payPrice);
-        }
-
-        return 0;
-    }
-
-    calculateFixedPriceDiscount(product: Product, fixedPriceRule: IFixedPricePricingRule) {
-        const buyingQuantity = this.products.filter((p) => p.id === product.id).length;
-
-        if (buyingQuantity === 0) {
-            return 0;
-        }
-
-        const initialPrice = product.price.mul(buyingQuantity);
-        const payPrice = fixedPriceRule.fixedPrice * buyingQuantity;
-        return initialPrice.sub(payPrice);
-    }
-
-    getFinalAmount() {
-        return this.finalAmount;
-    }
-
-    getInitialAmount() {
-        return this.initialAmount;
-    }
-
-    getDiscountAmount() {
-        return this.discountAmount;
-    }
+  getDiscountAmount(): Decimal {
+    return this.discountAmount;
+  }
 }

@@ -7,20 +7,20 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ProductService {
-    constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-    async getProducts() {
-        return await this.prisma.product.findMany();
-    }
+  async getProducts() {
+    return await this.prisma.product.findMany();
+  }
 
-    async createProduct(data: CreateProductDto) {
-        return await this.prisma.product.create({
-            data: {
-                ...data,
-                price: new Decimal(data.price),
-                slug: slugify(data.name),
-                type: ProductType.ADS,
-            },
-        });
-    }
+  async createProduct(data: CreateProductDto) {
+    return await this.prisma.product.create({
+      data: {
+        ...data,
+        price: new Decimal(data.price),
+        slug: slugify(data.name),
+        type: ProductType.ADS,
+      },
+    });
+  }
 }

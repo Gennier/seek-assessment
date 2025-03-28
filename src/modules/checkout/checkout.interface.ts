@@ -1,4 +1,4 @@
 export interface CreateCheckoutDto {
-    orders: [{ productId: string; quantity: number }];
-    promotionCode?: string;
+  orders: [{ productId: string; quantity: number }];
+  promotionCode?: string;
 }
