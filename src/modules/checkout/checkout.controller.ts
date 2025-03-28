@@ -8,11 +8,6 @@ export class CheckoutController {
 
   @Post('')
   async getList(@Body() data: CreateCheckoutDto) {
-    try {
       return await this.service.checkout(data);
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
   }
 }
